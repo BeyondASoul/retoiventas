@@ -1,7 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:retoiventas/Model/message.dart';
 import 'package:retoiventas/constants/colors.dart';
 import 'package:retoiventas/screens/login.dart';
 import 'package:retoiventas/utils/authentication.dart';
@@ -22,6 +22,12 @@ Expanded chatBottomBar(
                   padding: const EdgeInsets.only(left: 30.0, right: 5.0),
                   child: TextField(
                     controller: chatController,
+                    textInputAction: TextInputAction.go,
+                    onSubmitted: (value) {
+                      if (chatController.text.isNotEmpty) {
+                        sendMessage(chatController, uid, context);
+                      }
+                    },
                     decoration: const InputDecoration(
                         label: Text(
                           "Escribe un mensaje...",
@@ -195,48 +201,71 @@ class ChatContentView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      flex: 10,
-      child: ListView.builder(
-        itemCount: messages.length,
-        reverse: true,
-        shrinkWrap: true,
-        padding: const EdgeInsets.only(top: 5, bottom: 5),
-        itemBuilder: (context, index) {
-          return Container(
-            padding:
-                const EdgeInsets.only(left: 14, right: 14, top: 5, bottom: 5),
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('chats')
+          .doc('messages')
+          .collection('content')
+          .orderBy('date', descending: false)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return Expanded(
+            flex: 10,
             child: Align(
-              alignment: (messages[index].messageType != uid
-                  ? Alignment.centerLeft
-                  : Alignment.centerRight),
-              child: Container(
-                decoration: BoxDecoration(
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black12,
-                      spreadRadius: 1,
-                      blurRadius: 3,
-                      offset: Offset(0, 1), // changes position of shadow
-                    ),
-                  ],
-                  borderRadius: BorderRadius.circular(20),
-                  color: (messages[index].messageType != uid
-                      ? Colors.white
-                      : colorVerdeChat),
-                ),
-                padding: const EdgeInsets.all(10),
-                child: SelectableText(messages[index].messageContent,
-                    textAlign: messages[index].messageType != uid
-                        ? TextAlign.start
-                        : TextAlign.end,
-                    style: GoogleFonts.poppins(
-                        color: Colors.black, fontWeight: FontWeight.normal)),
-              ),
+              alignment: Alignment.bottomCenter,
+              child: ListView.builder(
+                  itemCount: snapshot.data!.docs.length,
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.only(top: 5, bottom: 5),
+                  itemBuilder: (context, index) {
+                    DocumentSnapshot doc = snapshot.data!.docs[index];
+
+                    return Container(
+                      padding: const EdgeInsets.only(
+                          left: 14, right: 14, top: 5, bottom: 5),
+                      child: Align(
+                        alignment: (doc['messageType'] != uid
+                            ? Alignment.centerLeft
+                            : Alignment.centerRight),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Colors.black12,
+                                spreadRadius: 1,
+                                blurRadius: 3,
+                                offset:
+                                    Offset(0, 1), // changes position of shadow
+                              ),
+                            ],
+                            borderRadius: BorderRadius.circular(20),
+                            color: (doc['messageType'] != uid
+                                ? Colors.white
+                                : colorVerdeChat),
+                          ),
+                          padding: const EdgeInsets.all(10),
+                          child: SelectableText(doc['messageContent'],
+                              textAlign: doc['messageType'] != uid
+                                  ? TextAlign.start
+                                  : TextAlign.end,
+                              style: GoogleFonts.poppins(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.normal)),
+                        ),
+                      ),
+                    );
+                  }),
             ),
           );
-        },
-      ),
+        } else {
+          return const Expanded(
+              flex: 10,
+              child: Center(
+                child: CircularProgressIndicator(),
+              ));
+        }
+      },
     );
   }
 }
