@@ -7,6 +7,27 @@ import 'package:retoiventas/screens/login.dart';
 import 'package:retoiventas/utils/authentication.dart';
 import 'package:retoiventas/utils/firebaseapi.dart';
 
+SelectableText contentData(Size mediaQuery, String content) {
+  return SelectableText(
+    content,
+    textAlign: TextAlign.start,
+    style: GoogleFonts.inter(
+        fontSize: 16, color: Colors.black, fontWeight: FontWeight.w700),
+  );
+}
+
+Padding titleData(Size mediaQuery, String title) {
+  return Padding(
+    padding: const EdgeInsets.only(top: 15.0),
+    child: SelectableText(
+      title,
+      textAlign: TextAlign.start,
+      style: GoogleFonts.inter(
+          fontSize: 16, color: Colors.black45, fontWeight: FontWeight.w300),
+    ),
+  );
+}
+
 Expanded chatBottomBar(
     TextEditingController chatController, String uid, BuildContext context) {
   return Expanded(
@@ -92,7 +113,7 @@ Expanded chatMobileTopBar(String asset, String name, BuildContext context) {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              avatar(asset),
+              avatar(asset, 1),
               const SizedBox(
                 width: 15.0,
               ),
@@ -148,7 +169,7 @@ Expanded chatDesktopTopBar(String asset, String name, BuildContext context) {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              avatar(asset),
+              avatar(asset, 1),
               const SizedBox(
                 width: 15.0,
               ),
@@ -183,12 +204,15 @@ Expanded chatDesktopTopBar(String asset, String name, BuildContext context) {
   );
 }
 
-AspectRatio avatar(String asset) {
+AspectRatio avatar(String asset, double scale) {
   return AspectRatio(
     aspectRatio: 4 / 3,
     child: CircleAvatar(
       backgroundColor: Colors.transparent,
-      child: Image.asset(asset),
+      child: Image.asset(
+        asset,
+        scale: scale,
+      ),
     ),
   );
 }
@@ -245,13 +269,13 @@ class ChatContentView extends StatelessWidget {
                                 : colorVerdeChat),
                           ),
                           padding: const EdgeInsets.all(10),
-                          child: SelectableText(doc['messageContent'],
-                              textAlign: doc['messageType'] != uid
-                                  ? TextAlign.start
-                                  : TextAlign.end,
-                              style: GoogleFonts.poppins(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.normal)),
+                          child: SelectableText(
+                            doc['messageContent'],
+                            textAlign: doc['messageType'] != uid
+                                ? TextAlign.start
+                                : TextAlign.end,
+                            style: const TextStyle(fontSize: 16),
+                          ),
                         ),
                       ),
                     );

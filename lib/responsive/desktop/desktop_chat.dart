@@ -46,7 +46,7 @@ class _DesktopChatState extends State<DesktopChat> {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(8.0, 80.0, 8.0, 40.0),
-              child: avatar("lib/assets/lucia.png"),
+              child: avatar("lib/assets/lucia.png", 1),
             ),
             SelectableText(
               "Lucía González",
@@ -123,27 +123,6 @@ class _DesktopChatState extends State<DesktopChat> {
     );
   }
 
-  SelectableText contentData(Size mediaQuery, String content) {
-    return SelectableText(
-      content,
-      textAlign: TextAlign.start,
-      style: GoogleFonts.inter(
-          fontSize: 16, color: Colors.black, fontWeight: FontWeight.w700),
-    );
-  }
-
-  Padding titleData(Size mediaQuery, String title) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 15.0),
-      child: SelectableText(
-        title,
-        textAlign: TextAlign.start,
-        style: GoogleFonts.inter(
-            fontSize: 16, color: Colors.black45, fontWeight: FontWeight.w300),
-      ),
-    );
-  }
-
   Expanded chatCentral(Size mediaQuery, String name,
       TextEditingController chatController, BuildContext context) {
     return Expanded(
@@ -181,7 +160,7 @@ class _DesktopChatState extends State<DesktopChat> {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(8.0, 80.0, 8.0, 40.0),
-              child: avatar(asset),
+              child: avatar(asset, 1),
             ),
             SelectableText(
               name,
