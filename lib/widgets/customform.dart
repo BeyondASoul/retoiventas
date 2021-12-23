@@ -8,10 +8,12 @@ Padding customTextField(
     Icon iconoIzquierda,
     String textoField,
     String contenidoField,
+    TextEditingController controller,
     String? Function(String?)? funcion) {
   return Padding(
     padding: const EdgeInsets.only(bottom: 35.0),
     child: TextFormField(
+      controller: controller,
       obscureText: contenidoField == "password" ? true : false,
       style:
           GoogleFonts.inter(color: Colors.black, fontWeight: FontWeight.bold),
@@ -23,7 +25,13 @@ Padding customTextField(
           textoField,
         ),
         border: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(25))),
+          borderRadius: BorderRadius.all(
+            Radius.circular(25),
+          ),
+          borderSide: BorderSide.none,
+        ),
+        filled: true,
+        fillColor: Colors.white,
       ),
       validator: funcion,
     ),

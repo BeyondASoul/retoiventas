@@ -1,7 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:retoiventas/responsive/chat.dart';
+import 'package:retoiventas/screens/login.dart';
+
+import 'package:retoiventas/utils/authentication.dart';
 import 'package:retoiventas/widgets/customform.dart';
 
 class MobileBody extends StatelessWidget {
@@ -10,6 +13,8 @@ class MobileBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+    final TextEditingController _emailController = TextEditingController();
+    final TextEditingController _passwordController = TextEditingController();
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -45,6 +50,7 @@ class MobileBody extends StatelessWidget {
                       const Icon(CupertinoIcons.mail),
                       "Correo elecrónico",
                       "email",
+                      _emailController,
                       (value) {
                         if (value!.isEmpty ||
                             !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w]{2,4}')
@@ -60,6 +66,7 @@ class MobileBody extends StatelessWidget {
                       const Icon(CupertinoIcons.lock),
                       "Contraseña",
                       "password",
+                      _passwordController,
                       (value) {
                         if (value!.isEmpty ||
                             !RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$')
@@ -76,13 +83,18 @@ class MobileBody extends StatelessWidget {
                     Center(
                       child: botonLogin(
                         "Iniciar sesión",
-                        () {
+                        () async {
                           if (formKey.currentState!.validate()) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const ChatApp()),
-                            );
+                            User? user = await signInWithEmailPassword(
+                                _emailController.text,
+                                _passwordController.text);
+                            if (user != null) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const LoginScreen()),
+                              );
+                            }
                           }
                         },
                       ),

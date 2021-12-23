@@ -2,23 +2,36 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:retoiventas/constants/colors.dart';
+import 'package:retoiventas/widgets/chat_widgets.dart';
 
-class DesktopChat extends StatelessWidget {
-  const DesktopChat({Key? key}) : super(key: key);
+class DesktopChat extends StatefulWidget {
+  final String ownName, ownPhone, ownAsset, uid;
+  const DesktopChat(
+      {Key? key,
+      required this.ownName,
+      required this.ownPhone,
+      required this.ownAsset,
+      required this.uid})
+      : super(key: key);
 
+  @override
+  State<DesktopChat> createState() => _DesktopChatState();
+}
+
+class _DesktopChatState extends State<DesktopChat> {
   @override
   Widget build(BuildContext context) {
     var mediaQuery = MediaQuery.of(context).size;
+    final TextEditingController chatController = TextEditingController();
     return Scaffold(
       backgroundColor: colorBlanquito,
-      body: SingleChildScrollView(
-        child: Row(
-          children: [
-            flexIzquierdo(mediaQuery),
-            chatCentral(mediaQuery),
-            flexDerecho(mediaQuery),
-          ],
-        ),
+      body: Row(
+        children: [
+          flexIzquierdo(
+              mediaQuery, widget.ownName, widget.ownPhone, widget.ownAsset),
+          chatCentral(mediaQuery, widget.ownName, chatController),
+          flexDerecho(mediaQuery),
+        ],
       ),
     );
   }
@@ -33,15 +46,9 @@ class DesktopChat extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(8.0, 80.0, 8.0, 40.0),
-              child: AspectRatio(
-                aspectRatio: 16 / 9,
-                child: CircleAvatar(
-                  backgroundColor: Colors.transparent,
-                  child: Image.asset("lib/assets/lucia.png"),
-                ),
-              ),
+              child: avatar("lib/assets/lucia.png"),
             ),
-            Text(
+            SelectableText(
               "Lucía González",
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
@@ -52,7 +59,7 @@ class DesktopChat extends StatelessWidget {
             const SizedBox(
               height: 10,
             ),
-            Text(
+            SelectableText(
               "55 2712 3617",
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
@@ -116,8 +123,8 @@ class DesktopChat extends StatelessWidget {
     );
   }
 
-  Text contentData(Size mediaQuery, String content) {
-    return Text(
+  SelectableText contentData(Size mediaQuery, String content) {
+    return SelectableText(
       content,
       textAlign: TextAlign.start,
       style: GoogleFonts.inter(
@@ -128,7 +135,7 @@ class DesktopChat extends StatelessWidget {
   Padding titleData(Size mediaQuery, String title) {
     return Padding(
       padding: const EdgeInsets.only(top: 15.0),
-      child: Text(
+      child: SelectableText(
         title,
         textAlign: TextAlign.start,
         style: GoogleFonts.inter(
@@ -137,62 +144,31 @@ class DesktopChat extends StatelessWidget {
     );
   }
 
-  Expanded chatCentral(Size mediaQuery) {
+  Expanded chatCentral(
+      Size mediaQuery, String name, TextEditingController chatController) {
     return Expanded(
       flex: 8,
-      child: Container(
+      child: SizedBox(
         height: mediaQuery.height,
         child: Column(
           children: [
-            Expanded(
-              flex: 1,
-              child: Container(
-                color: colorVerde,
-              ),
-            ),
-            Expanded(
-              flex: 10,
-              child: Container(
-                color: colorBlanquito,
-                child: ListView(
-                  children: [
-                    Container(
-                      height: 100,
-                      color: Colors.black,
-                    ),
-                    Container(
-                      height: 100,
-                      color: Colors.red,
-                    ),
-                    Container(
-                      height: 100,
-                      color: Colors.yellow,
-                    ),
-                    Container(
-                      height: 100,
-                      color: Colors.green,
-                    ),
-                    Container(
-                      height: 100,
-                      color: Colors.blue,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 1,
-              child: Container(
-                color: colorVerde,
-              ),
-            ),
+            chatDesktopTopBar(
+                name == "Alejandro García"
+                    ? "lib/assets/lucia.png"
+                    : "lib/assets/alejandro.png",
+                name == "Alejandro García"
+                    ? "Lucía González"
+                    : "Alejandro García",
+                context),
+            chatContentView(mediaQuery, widget.uid),
+            chatBottomBar(chatController, widget.uid),
           ],
         ),
       ),
     );
   }
 
-  Expanded flexIzquierdo(Size mediaQuery) {
+  Expanded flexIzquierdo(Size mediaQuery, String name, phone, asset) {
     return Expanded(
       flex: 2,
       child: Container(
@@ -202,16 +178,10 @@ class DesktopChat extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(8.0, 80.0, 8.0, 40.0),
-              child: AspectRatio(
-                aspectRatio: 16 / 9,
-                child: CircleAvatar(
-                  backgroundColor: Colors.transparent,
-                  child: Image.asset("lib/assets/alejandro.png"),
-                ),
-              ),
+              child: avatar(asset),
             ),
-            Text(
-              "Alejandro García",
+            SelectableText(
+              name,
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
                   fontSize: 16,
@@ -221,8 +191,8 @@ class DesktopChat extends StatelessWidget {
             const SizedBox(
               height: 10,
             ),
-            Text(
-              "55 2026 0240",
+            SelectableText(
+              phone,
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
                   fontSize: 16,
