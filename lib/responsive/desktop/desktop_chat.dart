@@ -29,7 +29,7 @@ class _DesktopChatState extends State<DesktopChat> {
         children: [
           flexIzquierdo(
               mediaQuery, widget.ownName, widget.ownPhone, widget.ownAsset),
-          chatCentral(mediaQuery, widget.ownName, chatController),
+          chatCentral(mediaQuery, widget.ownName, chatController, context),
           flexDerecho(mediaQuery),
         ],
       ),
@@ -144,8 +144,8 @@ class _DesktopChatState extends State<DesktopChat> {
     );
   }
 
-  Expanded chatCentral(
-      Size mediaQuery, String name, TextEditingController chatController) {
+  Expanded chatCentral(Size mediaQuery, String name,
+      TextEditingController chatController, BuildContext context) {
     return Expanded(
       flex: 8,
       child: SizedBox(
@@ -160,8 +160,11 @@ class _DesktopChatState extends State<DesktopChat> {
                     ? "Lucía González"
                     : "Alejandro García",
                 context),
-            chatContentView(mediaQuery, widget.uid),
-            chatBottomBar(chatController, widget.uid),
+            ChatContentView(
+              mediaQuery: mediaQuery,
+              uid: widget.uid,
+            ),
+            chatBottomBar(chatController, widget.uid, context),
           ],
         ),
       ),

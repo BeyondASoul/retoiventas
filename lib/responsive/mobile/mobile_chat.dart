@@ -33,8 +33,11 @@ class _MobileChatState extends State<MobileChat> {
                   ? "Lucía González"
                   : "Alejandro García",
               context),
-          chatContentView(mediaQuery, widget.uid),
-          chatBottomBar(chatController, widget.uid)
+          ChatContentView(
+            mediaQuery: mediaQuery,
+            uid: widget.uid,
+          ),
+          chatBottomBar(chatController, widget.uid, context)
         ],
       ),
     );

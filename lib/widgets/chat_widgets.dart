@@ -7,7 +7,8 @@ import 'package:retoiventas/screens/login.dart';
 import 'package:retoiventas/utils/authentication.dart';
 import 'package:retoiventas/utils/firebaseapi.dart';
 
-Expanded chatBottomBar(TextEditingController chatController, String uid) {
+Expanded chatBottomBar(
+    TextEditingController chatController, String uid, BuildContext context) {
   return Expanded(
     flex: 1,
     child: Stack(
@@ -22,6 +23,10 @@ Expanded chatBottomBar(TextEditingController chatController, String uid) {
                   child: TextField(
                     controller: chatController,
                     decoration: const InputDecoration(
+                        label: Text(
+                          "Escribe un mensaje...",
+                          style: TextStyle(fontWeight: FontWeight.w500),
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(
                             Radius.circular(25),
@@ -36,7 +41,11 @@ Expanded chatBottomBar(TextEditingController chatController, String uid) {
             Expanded(
               flex: 2,
               child: ElevatedButton(
-                onPressed: sendMessage(chatController, uid),
+                onPressed: () {
+                  if (chatController.text.isNotEmpty) {
+                    sendMessage(chatController, uid, context);
+                  }
+                },
                 child: const Icon(
                   CupertinoIcons.paperplane_fill,
                   color: colorBlanquito,
@@ -55,58 +64,11 @@ Expanded chatBottomBar(TextEditingController chatController, String uid) {
   );
 }
 
-sendMessage(TextEditingController chatController, String uid) {}
-
-// sendMessage(TextEditingController controller, String message, String uid,
-//     BuildContext context) async {
-//   FocusScope.of(context).unfocus();
-//   await FirebaseApi.uploadMessage(message, uid);
-//   controller.clear();
-// }
-
-Expanded chatContentView(Size mediaQuery, String uid) {
-  return Expanded(
-    flex: 10,
-    child: ListView.builder(
-      itemCount: messages.length,
-      shrinkWrap: true,
-      padding: const EdgeInsets.only(top: 5, bottom: 5),
-      itemBuilder: (context, index) {
-        return Container(
-          padding:
-              const EdgeInsets.only(left: 14, right: 14, top: 5, bottom: 5),
-          child: Align(
-            alignment: (messages[index].messageType != uid
-                ? Alignment.centerLeft
-                : Alignment.centerRight),
-            child: Container(
-              decoration: BoxDecoration(
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black12,
-                    spreadRadius: 1,
-                    blurRadius: 3,
-                    offset: Offset(0, 1), // changes position of shadow
-                  ),
-                ],
-                borderRadius: BorderRadius.circular(20),
-                color: (messages[index].messageType != uid
-                    ? Colors.white
-                    : colorVerdeChat),
-              ),
-              padding: const EdgeInsets.all(10),
-              child: SelectableText(messages[index].messageContent,
-                  textAlign: messages[index].messageType != uid
-                      ? TextAlign.start
-                      : TextAlign.end,
-                  style: GoogleFonts.poppins(
-                      color: Colors.black, fontWeight: FontWeight.normal)),
-            ),
-          ),
-        );
-      },
-    ),
-  );
+sendMessage(TextEditingController chatController, String uid,
+    BuildContext context) async {
+  //FocusScope.of(context).unfocus();
+  await FirebaseApi.uploadMessage(chatController.text, uid);
+  chatController.clear();
 }
 
 Expanded chatMobileTopBar(String asset, String name, BuildContext context) {
@@ -223,4 +185,58 @@ AspectRatio avatar(String asset) {
       child: Image.asset(asset),
     ),
   );
+}
+
+class ChatContentView extends StatelessWidget {
+  final Size mediaQuery;
+  final String uid;
+  const ChatContentView({Key? key, required this.mediaQuery, required this.uid})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      flex: 10,
+      child: ListView.builder(
+        itemCount: messages.length,
+        reverse: true,
+        shrinkWrap: true,
+        padding: const EdgeInsets.only(top: 5, bottom: 5),
+        itemBuilder: (context, index) {
+          return Container(
+            padding:
+                const EdgeInsets.only(left: 14, right: 14, top: 5, bottom: 5),
+            child: Align(
+              alignment: (messages[index].messageType != uid
+                  ? Alignment.centerLeft
+                  : Alignment.centerRight),
+              child: Container(
+                decoration: BoxDecoration(
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black12,
+                      spreadRadius: 1,
+                      blurRadius: 3,
+                      offset: Offset(0, 1), // changes position of shadow
+                    ),
+                  ],
+                  borderRadius: BorderRadius.circular(20),
+                  color: (messages[index].messageType != uid
+                      ? Colors.white
+                      : colorVerdeChat),
+                ),
+                padding: const EdgeInsets.all(10),
+                child: SelectableText(messages[index].messageContent,
+                    textAlign: messages[index].messageType != uid
+                        ? TextAlign.start
+                        : TextAlign.end,
+                    style: GoogleFonts.poppins(
+                        color: Colors.black, fontWeight: FontWeight.normal)),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
 }
